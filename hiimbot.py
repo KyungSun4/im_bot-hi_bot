@@ -4,6 +4,11 @@ import pdb
 import re
 import os
 
+import spacy
+
+# Load English tokenizer, tagger, parser, NER and word vectors
+nlp = spacy.load('en')
+
 
 # Create the Reddit instance
 reddit = praw.Reddit('bot1')
@@ -25,21 +30,39 @@ else:
 
 # Get the top 5 values from our subreddit
 subreddit = reddit.subreddit('pythonforengineers')
-for submission in subreddit.hot(limit=10):
+for submission in subreddit.new(limit=10):
     #print(submission.title)
 
     # If we haven't replied to this post before
     if submission.id not in posts_replied_to:
         print(submission.id)
 
-        # Do a case insensitive search
-        if re.search("im", submission.title, re.IGNORECASE):
-            # Reply to the post
-            submission.reply("hi " + submission.title.split('im')[1].split(" ")[1])
-            print("Bot replying to : ", submission.title)
+        contains_im = False
+        # Do a case insensitive search for variations of I'm
+        for im in [" im", "im ", " i'm", "i'm"]:
+            if re.search(im, submission.title, re.IGNORECASE):
+                doc = nlp(re.split(im, submission.title, flags=re.IGNORECASE)[1])
+                contains_im = True
+                break
+
+        # If found, create resonable response
+        if contains_im:
+            response = "hi "
+            for token in doc:
+                if token.pos_ == "PUNCT" or token.pos_ == "CCONJ":
+                    break
+                response += token.text + " "
+
+            # Reply
+            submission.reply(response)
+            print("Bot replying to : ", submission.title + "with " + response)
 
             # Store the current id into our list
             posts_replied_to.append(submission.id)
+        
+
+            # Store the current id into our list
+        posts_replied_to.append(submission.id)
 
 # Write our updated list back to the file
 with open("posts_replied_to.txt", "w") as f:
