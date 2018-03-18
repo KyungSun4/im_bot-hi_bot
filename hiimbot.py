@@ -5,13 +5,13 @@ import os
 import spacy
 
 # A list of subreddits to check
-subreddits = ["CasualConversation","aww", "funny", "videos", "pics", "gifs", "dankmemes", "overwatch", "jokes", "hearthstone", "games", "roastme", "memes"]
+subreddits = ["aww", "funny", "videos", "pics", "gifs", "dankmemes", "jokes", "hearthstone", "games", "roastme", "memes"]
 
 # Load spacy for english language proccesing
 nlp = spacy.load('en')
 
 # Create the Reddit instance
-reddit = praw.Reddit('bot1')
+reddit = praw.Reddit('bot2')
 
 # Have we run this code before? If not, create an empty list
 if not os.path.isfile("posts_replied_to.txt"):
