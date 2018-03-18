@@ -28,3 +28,8 @@ password=reddit_password
 username=reddit_username
 user_agent= hi bot im bot user agent 0.1
 ```
+## Potential Updates
+* Accuracy of searches and responses could be imporived
+* Could search and reply to comments
+* Could continue conversation with people that reply to its original comment
+* Improve list of subreddits
