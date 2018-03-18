@@ -32,3 +32,4 @@ user_agent= hi bot im bot user agent 0.1
 * Accuracy of searches and responses could be imporived
 * Could search and reply to comments
 * Could continue conversation with people that reply to its original comment
+* Improve list of subreddits
