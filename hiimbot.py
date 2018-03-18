@@ -64,10 +64,13 @@ for sub in subreddits:
                     response += token.text + " "
 
                 # Reply
-                submission.reply(response)
-                print("Bot replying to :", submission.title, "with", response)
-                reply_count+=1
-                # Store the current id into our list
+                try: 
+                    submission.reply(response)
+                    print("Bot replying to :", submission.title, "with", response)
+                    reply_count+=1
+                    # Store the current id into our list
+                except:
+                    print("failed to reply to ", submission.id)
                 posts_replied_to.append(submission.id)
             
 

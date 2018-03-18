@@ -1,6 +1,6 @@
 sudo apt-get  update -y
 sudo apt-get install python-pip -y
-sudo apt-get install git -y
 
 sudo pip install praw
 sudo pip install spacy && python -m spacy download en
+python3 hiimbot.py
