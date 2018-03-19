@@ -2,13 +2,12 @@
 import praw
 import re
 import os
-import spacy
+from time import sleep
 
 # A list of subreddits to check
-subreddits = ["aww", "funny", "videos", "pics", "gifs", "dankmemes", "jokes", "hearthstone", "games", "roastme", "memes"]
+subreddits = ["funny", "videos", "pics", "gifs", "dankmemes", "hearthstone", "games", "memes"]
 
-# Load spacy for english language proccesing
-nlp = spacy.load('en')
+endword = [".", ",", "and", "but", "so", "!", "?", "from"]
 
 # Create the Reddit instance
 reddit = praw.Reddit('bot2')
@@ -25,62 +24,61 @@ else:
         posts_replied_to = posts_replied_to.split("\n")
         posts_replied_to = list(filter(None, posts_replied_to))
 
+def find_and_reply():
+    print("starting search again")
+    reply_count = 0
 
-reply_count = 0
+    # check each subreddit in list
+    for sub in subreddits:
+        # Searches all subreddit
+        subreddit = reddit.subreddit(sub)
 
-# check each subreddit in list
-for sub in subreddits:
-    # Searches all subreddit
-    subreddit = reddit.subreddit(sub)
+        # gets 100 most recent posts
+        for submission in subreddit.new(limit=100):
+            #print(submission.title)
 
-    # gets 100 most recent posts
-    for submission in subreddit.new(limit=100):
-        #print(submission.title)
+            # If we haven't replied to this post before
+            if submission.id not in posts_replied_to:
 
-        # If we haven't replied to this post before
-        if submission.id not in posts_replied_to:
-
-            contains_im = False
-            # Do a case insensitive search for variations of I'm
-            for im in [" im ", "i'm"]:
-                if re.search(im, submission.title, re.IGNORECASE):
-                    doc = nlp(re.split(im, submission.title, flags=re.IGNORECASE)[1])
-                    contains_im = True
-                    break
-
-            # If starts with im
-            if re.search("im ", submission.title, re.IGNORECASE) :
-                split = re.split("im ", submission.title, flags=re.IGNORECASE)[1]
-                if split[0] == "":
-                    doc = nlp(split[1])
-                    contains_im = True
-
-            # If found, create resonable response
-            if contains_im:
-                response = "hi "
-                for token in doc:
-                    if token.pos_ == "PUNCT" or token.pos_ == "CCONJ":
+                contains_im = False
+                # Do a case insensitive search for variations of I'm
+                for im in [" im ", "i'm"]:
+                    if re.search(im, submission.title, re.IGNORECASE):
+                        string = re.split(im, submission.title, flags=re.IGNORECASE)[1]
+                        contains_im = True
                         break
-                    response += token.text + " "
 
-                # Reply
-                try: 
-                    submission.reply(response)
-                    print("Bot replying to :", submission.title, "with", response)
-                    reply_count+=1
-                    # Store the current id into our list
-                except:
-                    print("failed to reply to ", submission.id)
-                posts_replied_to.append(submission.id)
-            
+                # If starts with im
+                if re.search("im ", submission.title, re.IGNORECASE):
+                    split = re.split("im ", submission.title, flags=re.IGNORECASE)[1]
+                    if split[0] == "":
+                        string = split[1]
+                        contains_im = True
+
+                # If found, create resonable response
+                if contains_im:
+                    for splitter in endword:
+                        string = string.split(splitter)[0]
+                    response = "hi " + string
+                    # Reply
+                    try: 
+                        #submission.reply(response)
+                        print("Bot replying to :", submission.title, "with", response)
+                        reply_count+=1
+                        # Store the current id into our list
+                    except:
+                        print("failed to reply to ", submission.id)
 
                 # Store the current id into our list
-            posts_replied_to.append(submission.id)
+                #posts_replied_to.append(submission.id)
 
-# Write our updated list back to the file
-with open("posts_replied_to.txt", "w") as f:
-    for post_id in posts_replied_to:
-        f.write(post_id + "\n")
+    # Write our updated list back to the file
+    with open("posts_replied_to.txt", "w") as f:
+        for post_id in posts_replied_to:
+            f.write(post_id + "\n")
 
-print("replied to: " + str(reply_count))
-print("end")
+    print("replied to: " + str(reply_count))
+    print("end")
+while True:    
+    find_and_reply()
+    sleep(500)
