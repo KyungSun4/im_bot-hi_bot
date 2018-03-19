@@ -2,29 +2,15 @@
 import praw
 import re
 import os
-import spacy
 from time import sleep
 
-heroku = False or os.environ.get("HEROKU")
-if heroku:
-    client_id = os.environ.get("CLIENT_ID")
-    client_secret = os.environ.get("CLIENT_SECRET")
-    password = os.environ.get("PASSWORD")
-    username = os.environ.get("USERNAME")
-    user_agent = os.environ.get("USER_AGENT")
-
 # A list of subreddits to check
-subreddits = ["aww", "funny", "videos", "pics", "gifs", "dankmemes", "jokes", "hearthstone", "games", "memes"]
+subreddits = ["funny", "videos", "pics", "gifs", "dankmemes", "hearthstone", "games", "memes"]
 
-# Load spacy for english language proccesing
-nlp = spacy.load('en')
+endword = [".", ",", "and", "but", "so", "!", "?", "from"]
 
 # Create the Reddit instance
-if heroku:
-    print("heroku")
-    reddit = praw.Reddit('bot2', client_id=client_id, client_secret=client_secret, password=password, username=username,user_agent=user_agent)
-else:
-    reddit = praw.Reddit('bot2')
+reddit = praw.Reddit('bot2')
 
 # Have we run this code before? If not, create an empty list
 if not os.path.isfile("posts_replied_to.txt"):
@@ -58,38 +44,33 @@ def find_and_reply():
                 # Do a case insensitive search for variations of I'm
                 for im in [" im ", "i'm"]:
                     if re.search(im, submission.title, re.IGNORECASE):
-                        doc = nlp(re.split(im, submission.title, flags=re.IGNORECASE)[1])
+                        string = re.split(im, submission.title, flags=re.IGNORECASE)[1]
                         contains_im = True
                         break
 
                 # If starts with im
-                if re.search("im ", submission.title, re.IGNORECASE) :
+                if re.search("im ", submission.title, re.IGNORECASE):
                     split = re.split("im ", submission.title, flags=re.IGNORECASE)[1]
                     if split[0] == "":
-                        doc = nlp(split[1])
+                        string = split[1]
                         contains_im = True
 
                 # If found, create resonable response
                 if contains_im:
-                    response = "hi "
-                    for token in doc:
-                        if token.pos_ == "PUNCT" or token.pos_ == "CCONJ":
-                            break
-                        response += token.text + " "
-
+                    for splitter in endword:
+                        string = string.split(splitter)[0]
+                    response = "hi " + string
                     # Reply
                     try: 
-                        submission.reply(response)
+                        #submission.reply(response)
                         print("Bot replying to :", submission.title, "with", response)
                         reply_count+=1
                         # Store the current id into our list
                     except:
                         print("failed to reply to ", submission.id)
-                    posts_replied_to.append(submission.id)
-                
 
-                    # Store the current id into our list
-                posts_replied_to.append(submission.id)
+                # Store the current id into our list
+                #posts_replied_to.append(submission.id)
 
     # Write our updated list back to the file
     with open("posts_replied_to.txt", "w") as f:
