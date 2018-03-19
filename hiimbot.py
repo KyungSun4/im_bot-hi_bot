@@ -5,7 +5,7 @@ import os
 from time import sleep
 
 # A list of subreddits to check
-subreddits = ["funny", "videos", "pics", "gifs", "dankmemes", "hearthstone", "games", "memes"]
+subreddits = ["funny", "videos", "gifs", "dankmemes", "hearthstone", "games", "memes"]
 
 endword = [".", ",", " and", " but", " so", "!", "?", " from", " as", " for", " nor", " or"]
 
