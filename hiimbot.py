@@ -62,7 +62,7 @@ def find_and_reply():
                     response = "hi " + string
                     # Reply
                     try: 
-                        #submission.reply(response)
+                        submission.reply(response)
                         print("Bot replying to :", submission.title, "with", response)
                         reply_count+=1
                         # Store the current id into our list
@@ -70,7 +70,7 @@ def find_and_reply():
                         print("failed to reply to ", submission.id)
 
                 # Store the current id into our list
-                #posts_replied_to.append(submission.id)
+                posts_replied_to.append(submission.id)
 
     # Write our updated list back to the file
     with open("posts_replied_to.txt", "w") as f:
