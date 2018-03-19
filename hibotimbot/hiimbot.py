@@ -4,14 +4,6 @@ import re
 import os
 import spacy
 
-heroku = False or os.environ.get("HEROKU")
-if heroku:
-    client_id = os.environ.get("CLIENT_ID")
-    client_secret = os.environ.get("CLIENT_SECRET")
-    password = os.environ.get("PASSWORD")
-    username = os.environ.get("USERNAME")
-    user_agent = os.environ.get("USER_AGENT")
-
 # A list of subreddits to check
 subreddits = ['all']#["aww", "funny", "videos", "pics", "gifs", "dankmemes", "jokes", "hearthstone", "games", "roastme", "memes"]
 
@@ -19,11 +11,7 @@ subreddits = ['all']#["aww", "funny", "videos", "pics", "gifs", "dankmemes", "jo
 nlp = spacy.load('en')
 
 # Create the Reddit instance
-if heroku:
-    print("heroku")
-    reddit = praw.Reddit('bot2', client_id=client_id, client_secret=client_secret, password=password, username=username,user_agent=user_agent)
-else:
-    reddit = praw.Reddit('bot2')
+reddit = praw.Reddit('bot2')
 
 # Have we run this code before? If not, create an empty list
 if not os.path.isfile("posts_replied_to.txt"):
