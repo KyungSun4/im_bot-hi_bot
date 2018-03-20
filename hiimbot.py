@@ -111,7 +111,6 @@ def find_and_reply():
 
             # If not myself and not already replied to
             if reply.author != "im_bot-hi_bot" and reply.id not in comments_replied_to:
-                comment_reply_count+=1
                 replied = False
 
                 # Check for static responses (dad, bot)
@@ -141,9 +140,18 @@ def find_and_reply():
             
                 # Post response
                 if comment_response != "":
-                    print("replying to  "+ str(reply.author) +"'s comment " + reply.body + "  with " + comment_response)
-                    reply.reply(comment_response)
+                    try: 
+                        comment_reply_count+=1
+                        print("replying to  "+ str(reply.author) +"'s comment " + reply.body + "  with " + comment_response)
+                        reply.reply(comment_response)
+                        comments_replied_to.append(reply.id)
+                        # Store the current id into our list
+                    except:
+                        print("failed to reply to ", reply.id)
+                else:
                     comments_replied_to.append(reply.id)
+
+                    
 
     # Save comments already replied to
     with open("comments_replied_to.txt", "w") as f:
