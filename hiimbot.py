@@ -142,7 +142,7 @@ def find_and_reply():
                 # Post response
                 if comment_response != "":
                     print("replying to  "+ str(reply.author) +"'s comment " + reply.body + "  with " + comment_response)
-                    reply.comment(comment_response)
+                    reply.reply(comment_response)
                     comments_replied_to.append(reply.id)
 
     # Save comments already replied to
