@@ -24,9 +24,25 @@ else:
         posts_replied_to = posts_replied_to.split("\n")
         posts_replied_to = list(filter(None, posts_replied_to))
 
+# Have we run this code before? If not, create an empty list for comments
+if not os.path.isfile("comments_replied_to.txt"):
+    comments_replied_to = []
+    print("no file 'comments_replied_to.txt' found, will create new one")
+# If we have run the code before, load the list of posts we have replied to
+else:
+    # Read the file into a list and remove any empty values
+    with open("comments_replied_to.txt", "r") as f:
+        comments_replied_to = f.read()
+        comments_replied_to = comments_replied_to.split("\n")
+        comments_replied_to = list(filter(None, comments_replied_to))
+
+
 def find_and_reply():
     print("starting search again")
-    reply_count = 0
+    
+    post_reply_count = 0
+
+    comment_reply_count = 0
 
     # check each subreddit in list
     for sub in subreddits:
@@ -42,7 +58,7 @@ def find_and_reply():
 
                 contains_im = False
                 # Do a case insensitive search for variations of I'm
-                for im in [" im ", "i'm"]:
+                for im in [" im ", "i'm", "i’m"]:
                     if re.search(im, submission.title, re.IGNORECASE):
                         string = re.split(im, submission.title, flags=re.IGNORECASE)[1]
                         contains_im = True
@@ -77,7 +93,66 @@ def find_and_reply():
         for post_id in posts_replied_to:
             f.write(post_id + "\n")
 
-    print("replied to: " + str(reply_count))
+    user = reddit.redditor('im_bot-hi_bot')
+
+    my_replies = {"i'm dad": "no, [i am your father](https://media.giphy.com/media/xT9DPpf0zTqRASyzTi/giphy.gif)","i’m dad": "no, [i am your father](https://media.giphy.com/media/xT9DPpf0zTqRASyzTi/giphy.gif)", "im dad": "no, [i am your father](https://media.giphy.com/media/xT9DPpf0zTqRASyzTi/giphy.gif)", 
+        "dad":"please refer to me as father", "good bot":"<3","bad bot":"so sorry :(","bot":"I may be a bot, but bots are made by humans <3"}
+
+    # Get all my comments
+    for comment in user.comments.new(limit = None):
+
+        # Refresh to view replies to my comment
+        comment.refresh()
+
+        # For all replies and replies to replies...
+        comment.replies.replace_more()
+        for reply in comment.replies.list():
+            comment_response = ""
+
+            # If not myself and not already replied to
+            if reply.author != "im_bot-hi_bot" and reply.id not in comments_replied_to:
+                comment_reply_count+=1
+                replied = False
+
+                # Check for static responses (dad, bot)
+                for my_reply in my_replies:
+                    if re.search(my_reply, reply.body, flags=re.IGNORECASE) and not replied:
+                        comment_response = my_replies[my_reply]
+                        replied = True
+                        break;
+
+                # Check for dynamic responses (hi, im)
+                if not replied:
+                    if re.search("im ", reply.body, flags=re.IGNORECASE):
+                        their_name = re.split(" ", re.split("im ", reply.body, flags=re.IGNORECASE)[1], flags=re.IGNORECASE)[0]
+                        if their_name == str(reply.author):
+                            comment_response = "hi " + str(reply.author) + ", nice to meet you. have a great day!"
+                        else:
+                            comment_response = "no, u are " + str(reply.author)
+                    elif re.search("i'm ", reply.body, flags=re.IGNORECASE):
+                        their_name = re.split(" ", re.split("i'm ", reply.body, flags=re.IGNORECASE)[1], flags=re.IGNORECASE)[0]
+                        if their_name == str(reply.author):
+                            comment_response = "hi " + reply.author + ", nice to meet you. have a great day!"
+                        else:
+                            comment_response = "no, u are " + str(reply.author)
+                    elif re.search("hi", reply.body, flags=re.IGNORECASE) or re.search("hello", reply.body, flags=re.IGNORECASE):
+                        comment_response = "bye " + str(reply.author)
+                        
+            
+                # Post response
+                if comment_response != "":
+                    print("replying to  "+ str(reply.author) +"'s comment " + reply.body + "  with " + comment_response)
+                    reply.comment(comment_response)
+                    comments_replied_to.append(reply.id)
+
+    # Save comments already replied to
+    with open("comments_replied_to.txt", "w") as f:
+        for comment_id in comments_replied_to:
+            f.write(comment_id + "\n")
+        
+
+    print("replied to: " + str(post_reply_count) + " posts")
+    print("replied to: " + str(comment_reply_count) + " comments")
     print("end")
 while True:    
     find_and_reply()
