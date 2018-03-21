@@ -5,7 +5,7 @@ import os
 from time import sleep
 
 # A list of subreddits to check
-subreddits = ["funny", "videos", "gifs", "dankmemes", "hearthstone", "games", "memes"]
+subreddits = ["gifs", "dankmemes", "hearthstone", "games", "memes"]
 
 endword = [".", ",", " and ", " but ", " so ", "!", "?", " from ", " as ", " for ", " nor ", " or "]
 
@@ -148,8 +148,8 @@ def find_and_reply():
                         # Store the current id into our list
                     except:
                         print("failed to reply to ", reply.id)
-                else:
-                    comments_replied_to.append(reply.id)
+                
+                comments_replied_to.append(reply.id)
 
                     
 
