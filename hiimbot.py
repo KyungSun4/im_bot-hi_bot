@@ -166,4 +166,4 @@ count = 0
 while count < 145:    
     find_and_reply()
     sleep(600)
-    count+=1;
+    count+=1
