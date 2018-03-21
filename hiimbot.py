@@ -162,6 +162,8 @@ def find_and_reply():
     print("replied to: " + str(post_reply_count) + " posts")
     print("replied to: " + str(comment_reply_count) + " comments")
     print("end")
-while True:    
+count = 0
+while count < 145:    
     find_and_reply()
-    sleep(500)
+    sleep(600)
+    count+=1;
