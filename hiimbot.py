@@ -48,6 +48,8 @@ def generate_first_response(text):
     Creates the first response to strings containing variations of im
     returns None if no response found otherwise returns response
     '''
+    if re.search("[Serious]", text, re.IGNORECASE):
+        return None
     contains_im = False
     # Do a case insensitive search for variations of I'm
     for im in [" im ", "i'm", "i’m"]:
