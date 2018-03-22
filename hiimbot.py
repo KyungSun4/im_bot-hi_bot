@@ -166,7 +166,7 @@ def do_responses_to_reply(comment):
         
 
         # If not myself and not already replied to
-        if reply.author != "im_bot-hi_bot" and reply.id not in comments_replied_to:
+        if reply.author != "im_bot-hi_bot" and reply.author != "imguralbumbot" and reply.id not in comments_replied_to:
             
             generate_comment_reply(reply)        
             
