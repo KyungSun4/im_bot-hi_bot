@@ -152,6 +152,10 @@ def do_responses_to_reply(comment):
     find responses to initial comments and posts secondary responses to those comments
     returns the number of comments posted
     '''
+
+    reply_count = 0
+    comment_response = ""
+    
     # Refresh to view replies to my comment
     try:
         comment.refresh()
@@ -174,15 +178,15 @@ def do_responses_to_reply(comment):
                     print("replying to  "+ str(reply.author) +"'s comment " + reply.body + "  with " + comment_response)
                     reply.reply(comment_response)
                     comments_replied_to.append(reply.id)
-                    return 1
+                    reply_count += 1
                 except:
                     print("failed to reply to ", reply.id)
                     comments_replied_to.append(reply.id)
-                    return 0
+    return reply_count
 
 
 
-def find_and_reply():
+def find_and_reply(loop_count):
     '''
     finds all posible posts and comments to take action on and replies to those posts and comments
     '''
@@ -204,7 +208,13 @@ def find_and_reply():
 
     
     # Get all my comments
-    for comment in user.comments.new(limit = None):
+    lim = 1000
+    if loop_count % 10 == 1:
+        lim = 2000
+    if loop_count == 10:
+        lim = None
+    
+    for comment in user.comments.new(limit = lim):
         comment_reply_count += do_responses_to_reply(comment)
         
     save_reply_ids("comments_replied_to.txt", comments_replied_to)
@@ -220,9 +230,9 @@ posts_replied_to = get_list_of_reply_ids("posts_replied_to.txt")
 count = 0
 # Loops for aproximatly 1,080,000 seconds, or 1 day
 while count < 288:    
-    try:
-        find_and_reply()
-    except:
-        print("unknown round failure")
+    
+    find_and_reply(count)
+    
+    #    print("unknown round failure")
     sleep(300)
     count += 1
