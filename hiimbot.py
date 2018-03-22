@@ -17,8 +17,6 @@ my_replies = {"i'm dad": "no, [i am your father](https://media.giphy.com/media/x
 # Create the Reddit instance
 reddit = praw.Reddit('bot2')
 
-comments_replied_to = get_list_of_reply_ids("comments_replied_to.txt")
-posts_replied_to = get_list_of_reply_ids("posts_replied_to.txt")
 
 def get_list_of_reply_ids(file_name):
     '''
@@ -215,6 +213,9 @@ def find_and_reply():
     print("replied to: " + str(comment_reply_count) + " comments responses")
     print("end")
 
+
+comments_replied_to = get_list_of_reply_ids("comments_replied_to.txt")
+posts_replied_to = get_list_of_reply_ids("posts_replied_to.txt")
 
 count = 0
 # Loops for aproximatly 1,080,000 seconds, or 1 day
