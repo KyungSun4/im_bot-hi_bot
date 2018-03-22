@@ -5,7 +5,7 @@ import os
 from time import sleep
 
 # A list of subreddits to check
-subreddits = ["gifs", "dankmemes", "hearthstone", "games", "memes"]
+subreddits = ["all"] #["gifs", "dankmemes", "hearthstone", "games", "memes"]
 
 endword = [".", ",", " and ", " but ", " so ", "!", "?", " from ", " as ", " for ", " nor ", " or "]
 
@@ -80,7 +80,7 @@ def find_and_reply():
                     try: 
                         submission.reply(response)
                         print("Bot replying to :", submission.title, "with", response)
-                        reply_count+=1
+                        post_reply_count+=1
                         # Store the current id into our list
                     except:
                         print("failed to reply to ", submission.id)
@@ -88,10 +88,54 @@ def find_and_reply():
                 # Store the current id into our list
                 posts_replied_to.append(submission.id)
 
+        # gets 100 most recent posts
+        for comment in subreddit.comments(limit=100):
+            #print(submission.title)
+
+            # If we haven't replied to this post before
+            if comment.author != "im_bot-hi_bot" and comment.id not in comments_replied_to:
+
+                contains_im = False
+                # Do a case insensitive search for variations of I'm
+                for im in [" im ", "i'm", "i’m"]:
+                    if re.search(im, comment.body, re.IGNORECASE):
+                        string = re.split(im, comment.body, flags=re.IGNORECASE)[1]
+                        contains_im = True
+                        break
+
+                # If starts with im
+                if re.search("im ", comment.body, re.IGNORECASE):
+                    split = re.split("im ", comment.body, flags=re.IGNORECASE)[1]
+                    if split[0] == "":
+                        string = split[1]
+                        contains_im = True
+
+                # If found, create resonable response
+                if contains_im:
+                    for splitter in endword:
+                        string = string.split(splitter)[0]
+                    response = "hi " + string
+                    # Reply
+                    try: 
+                        comment.reply(response)
+                        print("Bot replying to :", comment.body, "with", response)
+                        comment_reply_count+=1
+                        # Store the current id into our list
+                    except:
+                        print("failed to reply to ", comment.id)
+
+                # Store the current id into our list
+                comments_replied_to.append(comment.id)
+
     # Write our updated list back to the file
     with open("posts_replied_to.txt", "w") as f:
         for post_id in posts_replied_to:
             f.write(post_id + "\n")
+
+    # Save comments already replied to
+    with open("comments_replied_to.txt", "w") as f:
+        for comment_id in comments_replied_to:
+            f.write(comment_id + "\n")
 
     user = reddit.redditor('im_bot-hi_bot')
 
@@ -102,8 +146,11 @@ def find_and_reply():
     for comment in user.comments.new(limit = None):
 
         # Refresh to view replies to my comment
-        comment.refresh()
-
+        try:
+            comment.refresh()
+        except:
+            print("failed to refresh comment")
+            break
         # For all replies and replies to replies...
         comment.replies.replace_more()
         for reply in comment.replies.list():
@@ -165,5 +212,5 @@ def find_and_reply():
 count = 0
 while count < 145:    
     find_and_reply()
-    sleep(600)
+    sleep(300)
     count+=1
