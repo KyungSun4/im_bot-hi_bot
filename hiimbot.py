@@ -154,7 +154,7 @@ def do_responses_to_reply(comment):
     '''
 
     reply_count = 0
-    comment_response = ""
+    
     
     # Refresh to view replies to my comment
     try:
@@ -169,8 +169,7 @@ def do_responses_to_reply(comment):
 
         # If not myself and not already replied to
         if reply.author != "im_bot-hi_bot" and reply.author != "imguralbumbot" and reply.id not in comments_replied_to:
-            
-            generate_comment_reply(reply)        
+            comment_response = generate_comment_reply(reply)        
             
             # Post response
             if comment_response != "":
