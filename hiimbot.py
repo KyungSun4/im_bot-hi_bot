@@ -89,7 +89,7 @@ def generate_comment_reply(reply):
 
     # Check for dynamic responses (hi, im)
     if not replied:
-        for im in " im ", "i'm", "i’m"]:
+        for im in [" im ", "i'm", "i’m"]:
             if re.search(im, reply.body, flags=re.IGNORECASE):
                 their_name = re.split(" ", re.split(im, reply.body, flags=re.IGNORECASE)[1], flags=re.IGNORECASE)[0]
                 if their_name == str(reply.author):
