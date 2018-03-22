@@ -48,7 +48,8 @@ def generate_first_response(text):
     Creates the first response to strings containing variations of im
     returns None if no response found otherwise returns response
     '''
-    if re.search("[Serious]", text, re.IGNORECASE):
+    if re.search("Serious", text, re.IGNORECASE):
+        print("serious post found: " + text)
         return None
     contains_im = False
     # Do a case insensitive search for variations of I'm
@@ -110,13 +111,13 @@ def do_first_responses(subreddit):
     response_count = 0
     # gets 100 most recent posts
     for submission in subreddit.new(limit=100):
-        #print(submission.title)
 
         # If we haven't replied to this post before
         if submission.id not in posts_replied_to:
             response = generate_first_response(submission.title)
             if response != None:
                 # Reply
+                print(submission.title)
                 try:
                     submission.reply(response)
                     print("Bot replying to :", submission.title, "with", response)
@@ -209,9 +210,9 @@ def find_and_reply(loop_count):
 
     
     # Get all my comments
-    lim = 1000
+    lim = 100
     if loop_count % 10 == 1:
-        lim = 2000
+        lim = 200
     if loop_count == 10:
         lim = None
     
