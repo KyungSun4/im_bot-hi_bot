@@ -105,7 +105,7 @@ def find_and_reply():
 
                 # If starts with im
                 if re.search("im ", comment.body, re.IGNORECASE):
-                    split = re.split("im ", comment.body, flags=re.IGNORECASE)[1]
+                    split = re.split("im ", comment.body, flags=re.IGNORECASE)
                     if split[0] == "":
                         string = split[1]
                         contains_im = True
@@ -211,6 +211,9 @@ def find_and_reply():
     print("end")
 count = 0
 while count < 145:    
-    find_and_reply()
+    try:
+        find_and_reply()
+    except:
+        print("unknown round failure")
     sleep(300)
     count+=1
