@@ -232,9 +232,10 @@ posts_replied_to = get_list_of_reply_ids("posts_replied_to.txt")
 count = 0
 # Loops for aproximatly 1,080,000 seconds, or 1 day
 while count < 288:    
-    
-    find_and_reply(count)
-    
+    try:
+        find_and_reply(count)
+    except:
+        print("error in main loop")
     #    print("unknown round failure")
     sleep(300)
     count += 1
